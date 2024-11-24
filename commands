@@ -1,0 +1,70 @@
+import telebot
+
+import random
+import os
+from telebot.types import Message
+
+bot = telebot.TeleBot("your bot id here")
+
+
+
+@bot.message_handler(commands=['start'])
+def cmd_start(message: Message):
+    bot.reply_to(message, "hi, this bot serves the purpose of informing people about how important pollution is, as a recycling station?? that's what the creators told me to say , /help would help :)")
+
+@bot.message_handler(commands=['help'])
+def cmd_start(message: Message):
+    bot.reply_to(message, "| commands:/start,/plastic,/metals,/cardboard,/feedback,/pollutedplaces,/quiz|")
+
+@bot.message_handler(commands=['plastic'])
+def cmd_start(message: Message):
+    bot.reply_to(message, "With different pieces of plastic you could make different objects by gluing the plastics and keeping it as a trophy for your amazing skill of saving the world, you could write #savetheworld on it ¯\_(ツ)_/¯ ")
+
+@bot.message_handler(commands=['metals'])
+def cmd_start(message: Message):
+    bot.reply_to(message, "metals such as iron or copper or gold could be smelt in a crucible . Ask friends that like doing diy projects if  they have one , smelt that metal and you could sell it at for example a scrapyard")
+
+
+@bot.message_handler(commands=['cardboard'])
+def cmd_start(message: Message):
+    bot.reply_to(message, "cardboard is mostly used in boxes so you could try saving them and making an object from them , for example a phone . Glue different cardboard pieces to make depth")
+
+
+@bot.message_handler(commands=['feedback'])
+def cmd_task(message: Message):
+    bot.reply_to(message, "tell me , what's wrong or what should i add?")
+    bot.register_next_step_handler(message, add_feedback)
+
+def add_feedback(message: Message):
+    feedback = message.text
+    with open("feedback.txt", "a", encoding="utf-8") as file:
+        file.write(feedback + "\n")
+        bot.reply_to(message, "your feedback has been noted")
+
+
+
+
+@bot.message_handler(commands=['pollutedplaces'])
+def cmd_mem(message:Message):
+    bot.reply_to(message, "these places are some of the most polluted places in the world")
+    pplaces = os.listdir("places")
+    tplace = random.choice(pplaces)
+    tplace = "places/" + tplace
+    with open(tplace, "rb") as file:
+        bot.send_photo(message.chat.id, file)
+
+
+@bot.message_handler(commands=['quiz'])
+def cmd_quiz(message: Message):
+    bot.reply_to(message, "what polluts more? 1: fumes 2: plastics")
+    bot.register_next_step_handler(message, add_answers)
+
+def add_answers(message: Message):
+    answer = message.text
+    if answer == "1":
+        bot.reply_to(message, "indeed")
+    else:
+        bot.reply_to(message, "you're not a certified pollution expert are you?")
+
+
+bot.polling()
